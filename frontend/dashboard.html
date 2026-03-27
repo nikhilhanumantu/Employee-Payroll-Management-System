@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PayrollPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-wallet"></i> PayrollPro
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-section-title">Navigation</div>
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="employees.html" class="nav-item">
+                    <i class="fas fa-users"></i> Employees
+                </a>
+                <a href="attendance.html" class="nav-item">
+                    <i class="fas fa-calendar-check"></i> Attendance
+                </a>
+                <a href="payroll.html" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i> Payroll
+                </a>
+                <a href="reports.html" class="nav-item admin-only">
+                    <i class="fas fa-chart-bar"></i> Reports
+                </a>
+            </div>
+
+            <div class="sidebar-footer" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <i class="fas fa-bars pointer"></i>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-icon">
+                        <i class="far fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </div>
+                    <div class="user-profile flex items-center gap-2" style="margin-left: 1rem;">
+                        <div style="text-align: right;">
+                            <div class="font-semibold" id="user-welcome">Admin User</div>
+                            <div class="text-muted" style="font-size: 11px;" id="user-role">admin</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Admin Dashboard</h1>
+                        <p class="text-muted">Overview of payroll operations</p>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stat-cards">
+                    <div class="card stat-card">
+                        <div class="stat-info">
+                            <div class="stat-label">Total Employees</div>
+                            <div class="stat-value" id="stat-emp-count">0</div>
+                        </div>
+                        <div class="stat-icon icon-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="card stat-card admin-only">
+                        <div class="stat-info">
+                            <div class="stat-label">Total Payroll Cost</div>
+                            <div class="stat-value" id="stat-total-cost">₹0</div>
+                        </div>
+                        <div class="stat-icon icon-green">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-info">
+                            <div class="stat-label">Processed</div>
+                            <div class="stat-value" id="stat-processed">0</div>
+                        </div>
+                        <div class="stat-icon icon-orange">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card admin-only">
+                        <div class="stat-info">
+                            <div class="stat-label">Paid</div>
+                            <div class="stat-value" id="stat-paid">0</div>
+                        </div>
+                        <div class="stat-icon icon-purple">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid border-color admin-only">
+                    <div class="card chart-card">
+                        <h3>Payroll Trend</h3>
+                        <div class="chart-container">
+                            <canvas id="payrollTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <h3>Department Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="deptDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Payments Table -->
+                <div class="card admin-only">
+                    <h3 class="font-semibold mb-4">Recent Payments</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Period</th>
+                                    <th>Net Salary</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-payments-table">
+                                <!-- JS Injection -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

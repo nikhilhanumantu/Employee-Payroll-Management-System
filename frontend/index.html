@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PayrollPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="img/srm_logo.png" alt="SRM Logo" style="max-height: 80px; margin-bottom: 1rem;">
+            <h1 class="font-bold" style="font-size: 1.5rem;">PayrollPro</h1>
+            <p class="text-muted mt-2">Employee Payroll Management System</p>
+        </div>
+
+        <div class="login-box">
+            <h2 class="font-semibold mb-1 text-center" style="font-size: 1.25rem;">Sign in to your account</h2>
+            <p class="text-muted text-center mb-6">Enter your credentials to continue</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="admin@company.com" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="login-demo-creds">
+                <p class="font-semibold mb-1">Demo Credentials</p>
+                <div class="flex justify-between mb-1">
+                    <span>Admin:</span>
+                    <span>admin@company.com / admin123</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Employee:</span>
+                    <span>employee@company.com / emp123</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="js/app.js"></script>
+    <script>
+        // If already logged in, redirect to dashboard
+        if (localStorage.getItem('token')) {
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+                btn.disabled = true;
+
+                const res = await api('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                localStorage.setItem('token', res.token);
+                localStorage.setItem('user', JSON.stringify(res.user));
+
+                showToast('Logged in successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+
+            } catch (err) {
+                showToast(err.message || 'Login failed', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

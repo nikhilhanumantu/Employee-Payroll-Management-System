@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - PayrollPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-layout admin-only">
+        <!-- Sidebar -->
+        <aside class="sidebar admin-only">
+            <div class="sidebar-header">
+                <i class="fas fa-wallet"></i> PayrollPro
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-section-title">Navigation</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="employees.html" class="nav-item">
+                    <i class="fas fa-users"></i> Employees
+                </a>
+                <a href="attendance.html" class="nav-item">
+                    <i class="fas fa-calendar-check"></i> Attendance
+                </a>
+                <a href="payroll.html" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i> Payroll
+                </a>
+                <a href="reports.html" class="nav-item active admin-only">
+                    <i class="fas fa-chart-bar"></i> Reports
+                </a>
+            </div>
+
+            <div class="sidebar-footer" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar admin-only">
+                <div class="topbar-left">
+                    <i class="fas fa-bars pointer"></i>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-profile flex items-center gap-2">
+                        <div style="text-align: right;">
+                            <div class="font-semibold" id="user-welcome">User</div>
+                            <div class="text-muted" style="font-size: 11px;" id="user-role">role</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Reports</h1>
+                        <p class="text-muted">Payroll analytics and export</p>
+                    </div>
+                    <button class="btn btn-outline" id="exportCsvBtn">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                </div>
+
+                <div class="stat-cards mb-6">
+                    <div class="card p-0" style="padding: 1.5rem">
+                        <div class="font-semibold text-muted text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.5px">Total Gross</div>
+                        <h2 class="font-bold" style="color:#2563eb; font-size: 1.8rem;" id="r-gross">₹0</h2>
+                    </div>
+                    <div class="card p-0" style="padding: 1.5rem">
+                        <div class="font-semibold text-muted text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.5px">Total Deductions</div>
+                        <h2 class="font-bold" style="color:#ef4444; font-size: 1.8rem;" id="r-ded>">₹0</h2>
+                    </div>
+                    <div class="card p-0" style="padding: 1.5rem">
+                        <div class="font-semibold text-muted text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.5px">Total Net Paid</div>
+                        <h2 class="font-bold" style="color:#10b981; font-size: 1.8rem;" id="r-net">₹0</h2>
+                    </div>
+                </div>
+
+                <div class="card mb-6" style="height: 450px;">
+                    <h3 class="font-semibold mb-4 text-sm" style="font-size: 13px;">Monthly Payroll Trend</h3>
+                    <div class="chart-container" style="height: 350px; width: 100%;">
+                        <canvas id="multiTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- For Employees accessing reports illegally -->
+    <div id="no-access" style="display:none; height:100vh; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <i class="fas fa-lock text-muted mb-4" style="font-size: 48px;"></i>
+        <h2>Access Denied</h2>
+        <p class="text-muted mt-2">You do not have permission to view this page.</p>
+        <a href="dashboard.html" class="btn btn-primary mt-4">Return to Dashboard</a>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="js/app.js"></script>
+    <script src="js/reports.js"></script>
+    <script>
+        const u = getUser();
+        if (u && u.role !== 'admin') {
+            document.querySelector('.app-layout').style.display = 'none';
+            document.getElementById('no-access').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
