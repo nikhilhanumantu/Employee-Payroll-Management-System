@@ -24,7 +24,7 @@ CREATE TABLE employees (
 
 INSERT INTO employees (id, name, department, designation, email, basic_salary) VALUES 
 ('EMP001', 'John Doe', 'IT', 'Software Engineer', 'john.doe@company.com', 75000.00),
-('EMP002', 'Jane Smith', 'HR', 'HR Manager', 'jane.smith@company.com', 65000.00),
+('EMP002', 'Jane Smith', 'Human Resources', 'HR Manager', 'jane.smith@company.com', 65000.00),
 ('EMP003', 'Robert Brown', 'Finance', 'Accountant', 'robert.brown@company.com', 60000.00),
 ('EMP004', 'Emily Davis', 'Marketing', 'Digital Marketer', 'emily.davis@company.com', 55000.00),
 ('EMP005', 'Michael Wilson', 'Sales', 'Sales Executive', 'michael.wilson@company.com', 50000.00),
