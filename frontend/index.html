@@ -47,6 +47,10 @@
                     <span>employee@company.com / emp123</span>
                 </div>
             </div>
+
+            <div class="text-center mt-6 pt-4" style="border-top: 1px solid #e2e8f0;">
+                <p class="text-sm text-muted">New employee? <a href="register.html" class="font-semibold" style="color: var(--primary-color);">Register your account</a></p>
+            </div>
         </div>
     </div>
 
@@ -54,7 +58,7 @@
     <script src="js/app.js"></script>
     <script>
         // If already logged in, redirect to dashboard
-        if (localStorage.getItem('token')) {
+        if (sessionStorage.getItem('token')) {
             window.location.href = 'dashboard.html';
         }
 
@@ -74,8 +78,8 @@
                     body: JSON.stringify({ email, password })
                 });
 
-                localStorage.setItem('token', res.token);
-                localStorage.setItem('user', JSON.stringify(res.user));
+                sessionStorage.setItem('token', res.token);
+                sessionStorage.setItem('user', JSON.stringify(res.user));
 
                 showToast('Logged in successfully', 'success');
                 setTimeout(() => {

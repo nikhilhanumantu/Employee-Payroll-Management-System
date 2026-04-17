@@ -48,4 +48,63 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// @route   POST /api/register
+router.post('/register', async (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({ message: 'Request body is missing' });
+  }
+
+  const { email, password } = req.body;
+
+
+
+  let conn;
+  try {
+    conn = await db.getConnection();
+    await conn.beginTransaction();
+
+
+    // 1. Check if employee exists in records (Added by Admin)
+    const [employee] = await conn.query('SELECT name FROM employees WHERE email = ?', [email]);
+    if (employee.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ message: 'Email not found in employee records. Please contact your Admin.' });
+    }
+
+    // 2. Check if user already has a login account
+    const [existingUser] = await conn.query('SELECT id FROM users WHERE email = ?', [email]);
+    
+    // 3. Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    if (existingUser.length > 0) {
+      // Update existing account
+      await conn.query(
+        'UPDATE users SET password = ? WHERE email = ?',
+        [hashedPassword, email]
+      );
+      await conn.commit();
+      return res.status(200).json({ message: 'Password updated successfully.' });
+    } else {
+      // Create new account
+      await conn.query(
+        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, "employee")',
+        [employee[0].name, email, hashedPassword]
+      );
+      await conn.commit();
+      return res.status(201).json({ message: 'Account created successfully.' });
+    }
+
+
+  } catch (error) {
+    if (conn) await conn.rollback();
+    console.error(error);
+    res.status(500).json({ message: 'Registration failed: ' + error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+
+});
+
 module.exports = router;

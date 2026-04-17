@@ -2,7 +2,7 @@ const API_URL = 'http://localhost:5000';
 
 // Central API fetch wrapper handling tokens
 async function api(endpoint, options = {}) {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     
     const defaultHeaders = {
         'Content-Type': 'application/json'
@@ -39,11 +39,12 @@ async function api(endpoint, options = {}) {
 
 // Auth state management
 function checkAuth() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const user = getUser();
-    if (!token && !window.location.pathname.endsWith('index.html') && !window.location.pathname.endsWith('/')) {
+    if (!token && !window.location.pathname.endsWith('index.html') && !window.location.pathname.endsWith('register.html') && !window.location.pathname.endsWith('/')) {
         window.location.href = 'index.html';
     }
+
     
     // Update UI with user info
     if (user) {
@@ -62,13 +63,13 @@ function checkAuth() {
 }
 
 function getUser() {
-    const userStr = localStorage.getItem('user');
+    const userStr = sessionStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
 }
 
 function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     window.location.href = 'index.html';
 }
 
@@ -125,4 +126,100 @@ document.addEventListener('DOMContentLoaded', () => {
             if(modal) modal.classList.remove('active');
         });
     });
+
+    // Notification dropdown toggle
+    const notifIcon = document.querySelector('.notification-icon');
+    const notifDropdown = document.querySelector('.notifications-dropdown');
+    
+    if (notifIcon && notifDropdown) {
+        notifIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifDropdown.classList.toggle('active');
+            if (notifDropdown.classList.contains('active')) {
+                fetchNotifications();
+            }
+        });
+
+        document.addEventListener('click', () => {
+            notifDropdown.classList.remove('active');
+        });
+
+        notifDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    // Initial fetch of notifications count
+    if (getUser()) {
+        fetchNotifications();
+        // Check every minute
+        setInterval(fetchNotifications, 60000);
+    }
 });
+
+async function fetchNotifications() {
+    try {
+        const notifications = await api('/api/notifications');
+        renderNotifications(notifications);
+    } catch (error) {
+        console.error('Failed to fetch notifications:', error);
+    }
+}
+
+function renderNotifications(notifications) {
+    const list = document.querySelector('.notifications-list');
+    const dot = document.querySelector('.notification-dot');
+    if (!list) return; // Stability fix for pages without notifications UI
+
+    list.innerHTML = '';
+    const unreadCount = notifications.filter(n => !n.is_read).length;
+
+    if (dot) {
+        dot.style.display = unreadCount > 0 ? 'block' : 'none';
+    }
+
+    if (notifications.length === 0) {
+        list.innerHTML = '<div class="p-4 text-center text-muted">No notifications</div>';
+        return;
+    }
+
+    notifications.forEach(n => {
+        const item = document.createElement('div');
+        item.className = `notification-item ${n.is_read ? '' : 'unread'}`;
+        
+        let iconClass = 'fa-info-circle text-blue-500';
+        if (n.type === 'success') iconClass = 'fa-check-circle text-green-500';
+        if (n.type === 'warning') iconClass = 'fa-exclamation-triangle text-yellow-500';
+        if (n.type === 'danger') iconClass = 'fa-times-circle text-red-500';
+
+        item.innerHTML = `
+            <i class="fas ${iconClass}"></i>
+            <div class="notification-content">
+                <p>${n.message}</p>
+                <span>${new Date(n.created_at).toLocaleString()}</span>
+            </div>
+        `;
+
+        item.onclick = () => markAsRead(n.id);
+        list.appendChild(item);
+    });
+}
+
+async function markAsRead(id) {
+    try {
+        await api(`/api/notifications/${id}/read`, { method: 'PUT' });
+        fetchNotifications();
+    } catch (error) {
+        console.error('Failed to mark notification as read:', error);
+    }
+}
+
+async function markAllAsRead() {
+    try {
+        await api('/api/notifications/read-all', { method: 'PUT' });
+        fetchNotifications();
+    } catch (error) {
+        console.error('Failed to mark all as read:', error);
+    }
+}
+

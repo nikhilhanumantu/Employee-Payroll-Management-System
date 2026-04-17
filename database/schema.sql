@@ -45,3 +45,35 @@ CREATE TABLE payroll (
   status ENUM('pending', 'processed', 'paid') DEFAULT 'pending',
   FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
 );
+
+-- =========================================
+-- LOG TABLE (FOR TRIGGER)
+-- =========================================
+CREATE TABLE IF NOT EXISTS logs (
+  log_id INT AUTO_INCREMENT PRIMARY KEY,
+  message VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================================
+-- VIEW 
+-- =========================================
+CREATE OR REPLACE VIEW payroll_summary AS
+SELECT e.name, e.department, p.month, p.net_salary, p.status
+FROM employees e
+JOIN payroll p ON e.id = p.employee_id;
+
+-- =========================================
+-- TRIGGER 
+-- =========================================
+DELIMITER $$
+
+CREATE TRIGGER IF NOT EXISTS after_payroll_insert
+AFTER INSERT ON payroll
+FOR EACH ROW
+BEGIN
+  INSERT INTO logs(message)
+  VALUES (CONCAT('Payroll generated for Employee ID: ', NEW.employee_id));
+END$$
+
+DELIMITER ;

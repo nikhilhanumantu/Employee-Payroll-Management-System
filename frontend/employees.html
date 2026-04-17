@@ -48,8 +48,23 @@
                     <i class="fas fa-bars pointer"></i>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-icon">
-                        <i class="far fa-bell"></i>
+                    <div class="notification-container">
+                        <div class="notification-icon">
+                            <i class="far fa-bell"></i>
+                            <span class="notification-dot" style="display: none;"></span>
+                        </div>
+                        <div class="notifications-dropdown">
+                            <div class="notifications-header">
+                                <h4 class="font-semibold">Notifications</h4>
+                                <a href="javascript:void(0)" onclick="markAllAsRead()" style="font-size: 11px; color: var(--primary-color);">Mark all read</a>
+                            </div>
+                            <div class="notifications-list">
+                                <!-- JS Injected -->
+                            </div>
+                            <div class="notifications-footer">
+                                <a href="javascript:void(0)">System Updates</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="user-profile flex items-center gap-2" style="margin-left: 1rem;">
                         <div style="text-align: right;">

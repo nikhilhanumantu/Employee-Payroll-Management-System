@@ -5,27 +5,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // Current month/year default selection
     const date = new Date();
     document.getElementById('filterMonth').value = months[date.getMonth()];
+    document.getElementById('filterYear').value = date.getFullYear();
     
     // Setup modal options
     const modalMonthSelect = document.getElementById('attMonth');
-    months.forEach(m => {
-        const option = document.createElement('option');
-        option.value = m;
-        option.textContent = m;
-        modalMonthSelect.appendChild(option);
-    });
-    modalMonthSelect.value = months[date.getMonth()];
-    document.getElementById('attYear').value = date.getFullYear();
+    if (modalMonthSelect) {
+        months.forEach(m => {
+            const option = document.createElement('option');
+            option.value = m;
+            option.textContent = m;
+            modalMonthSelect.appendChild(option);
+        });
+        modalMonthSelect.value = months[date.getMonth()];
+    }
+    
+    if (document.getElementById('attYear')) {
+        document.getElementById('attYear').value = date.getFullYear();
+    }
+
+    if (getUser()?.role === 'employee') {
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    }
 
     loadEmployeesForDropdown();
     loadAttendance();
 
     // Auto-calculate to ensure logical inputs
-    ['attPresent', 'attAbsent', 'attLeaves'].forEach(id => {
-        document.getElementById(id).addEventListener('change', autoCheckWorkingDays);
-    });
+    if (document.getElementById('attPresent')) {
+        ['attPresent', 'attAbsent', 'attLeaves'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', autoCheckWorkingDays);
+        });
+    }
 
-    document.getElementById('attendanceForm').addEventListener('submit', handleAttendanceSubmit);
+    if (document.getElementById('attendanceForm')) {
+        document.getElementById('attendanceForm').addEventListener('submit', handleAttendanceSubmit);
+    }
 });
 
 async function loadEmployeesForDropdown() {

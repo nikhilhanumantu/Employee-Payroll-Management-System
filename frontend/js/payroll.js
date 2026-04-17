@@ -4,22 +4,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Current month/year default selection
     const date = new Date();
     document.getElementById('filterMonth').value = months[date.getMonth()];
+    document.getElementById('filterYear').value = date.getFullYear();
     
     // Setup modal options
     const procMonthSelect = document.getElementById('procMonth');
-    months.forEach(m => {
-        const option = document.createElement('option');
-        option.value = m;
-        option.textContent = m;
-        procMonthSelect.appendChild(option);
-    });
-    procMonthSelect.value = months[date.getMonth()];
-    document.getElementById('procYear').value = date.getFullYear();
+    if (procMonthSelect) {
+        months.forEach(m => {
+            const option = document.createElement('option');
+            option.value = m;
+            option.textContent = m;
+            procMonthSelect.appendChild(option);
+        });
+        procMonthSelect.value = months[date.getMonth()];
+    }
+    
+    if (document.getElementById('procYear')) {
+        document.getElementById('procYear').value = date.getFullYear();
+    }
+
+    if (getUser()?.role === 'employee') {
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    }
 
     loadEmployeesForDropdown();
     loadPayroll();
 
-    document.getElementById('processForm').addEventListener('submit', handleProcessSubmit);
+    if (document.getElementById('processForm')) {
+        document.getElementById('processForm').addEventListener('submit', handleProcessSubmit);
+    }
 });
 
 async function loadEmployeesForDropdown() {
